@@ -36,10 +36,6 @@ public class CozinhaRepositoryImpl implements CozinhaRepository {
 	public Cozinha buscar(Long id) {
 		Cozinha cozinha = manager.find(Cozinha.class, id);
 		
-		if (cozinha == null) {
-			throw new EmptyResultDataAccessException(1);
-		}
-		
 		return cozinha;
 	}
 	
@@ -47,6 +43,10 @@ public class CozinhaRepositoryImpl implements CozinhaRepository {
 	@Override
 	public void remover(Long id) {
 		Cozinha cozinha = buscar(id);
+		
+		if (cozinha == null) {
+			throw new EmptyResultDataAccessException(1);
+		}
 		
 		manager.remove(cozinha);
 	}
