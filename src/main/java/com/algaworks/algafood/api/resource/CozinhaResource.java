@@ -52,7 +52,7 @@ public class CozinhaResource {
 		
 		cozinha = cadastroCozinha.salvar(cozinha);
 		
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{codigo}").buildAndExpand(cozinha.getId()).toUri();
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(cozinha.getId()).toUri();
 		
 		return ResponseEntity.created(uri).body(cozinha);
 	}
@@ -68,7 +68,7 @@ public class CozinhaResource {
 		
 		BeanUtils.copyProperties(cozinha, cozinhaAtual);
 		
-		cozinhaRepoistory.salvar(cozinhaAtual);
+		cozinhaAtual = cozinhaRepoistory.salvar(cozinhaAtual);
 		
 		return ResponseEntity.ok(cozinhaAtual);
 	}
