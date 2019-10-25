@@ -21,7 +21,7 @@ public class CadastroRestauranteService {
 	public Restaurante salvar(Restaurante restaurante) {
 		Long cozinhaId = restaurante.getCozinha().getId();
 		
-		Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
+		Cozinha cozinha = cozinhaRepository.getOne(cozinhaId);
 		
 		if (cozinha == null) {
 			throw new EntidadeNaoEncontradaException(String.format("Não existe cadastro da cozinha com código %d", cozinhaId));
