@@ -2,6 +2,7 @@ package com.algaworks.algafood.api.resource;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,9 @@ public class CozinhaResource {
 	@GetMapping("/{id}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable Long id) {
 		
-		Cozinha cozinha = cozinhaRepoistory.getOne(id);
+		Optional<Cozinha> cozinha = cozinhaRepoistory.findById(id);
 		
-		return cozinha != null ? ResponseEntity.ok(cozinha) : ResponseEntity.notFound().build();
+		return cozinha.isPresent() ? ResponseEntity.ok(cozinha.get()) : ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping
@@ -60,17 +61,17 @@ public class CozinhaResource {
 	@PutMapping
 	public ResponseEntity<Cozinha> atualizar(@RequestBody Cozinha cozinha) {
 		
-		Cozinha cozinhaAtual = cozinhaRepoistory.getOne(cozinha.getId());
+		Optional<Cozinha> cozinhaAtual = cozinhaRepoistory.findById(cozinha.getId());
 		
-		if (cozinhaAtual == null) {
+		if (cozinhaAtual.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
 		
-		BeanUtils.copyProperties(cozinha, cozinhaAtual);
+		BeanUtils.copyProperties(cozinha, cozinhaAtual.get());
 		
-		cozinhaAtual = cozinhaRepoistory.save(cozinhaAtual);
+		Cozinha cozinhaSalva = cadastroCozinha.salvar(cozinhaAtual.get());
 		
-		return ResponseEntity.ok(cozinhaAtual);
+		return ResponseEntity.ok(cozinhaSalva);
 	}
 	
 	@DeleteMapping
