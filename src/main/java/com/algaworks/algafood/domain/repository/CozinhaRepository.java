@@ -1,13 +1,15 @@
 package com.algaworks.algafood.domain.repository;
 
 import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
 import com.algaworks.algafood.domain.model.Cozinha;
 
-public interface CozinhaRepository extends JpaRepository<Cozinha, Long> {
+public interface CozinhaRepository extends CustomJpaRepository<Cozinha, Long> {
 
 	List<Cozinha> findAllByNomeContaining(String nome);
 	
+	Optional<Cozinha> findByNome(String nome);
+	
+	boolean existsByNome(String nome);
 }

@@ -62,29 +62,31 @@ public class RestauranteResource {
 		}
 	}
 	
-	@PutMapping
-	public ResponseEntity<?> atualizar(@RequestBody Restaurante restaurante) {
-		Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restaurante.getId());
-		
-		if (restauranteAtual.isPresent()) {
-			BeanUtils.copyProperties(restaurante, restauranteAtual.get());
+	@PutMapping("/{id}")
+	public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante) {
 			
-			try {
+		try {
+			Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restaurante.getId());
+			
+			if (restauranteAtual.isPresent()) {
+				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id");
+			
 				Restaurante restauranteAtualizado = cadastroRestaurante.salvar(restauranteAtual.get());
 				
 				return ResponseEntity.ok(restauranteAtualizado);
-			} catch (EntidadeNaoEncontradaException e) {
-				return ResponseEntity.badRequest().body(e.getMessage());
 			}
+			
+			return ResponseEntity.notFound().build();
+			
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		
-		return ResponseEntity.notFound().build();
 	}
 	
-	@PatchMapping
-	public ResponseEntity<?> atualiarParcial(@RequestBody Map<String, Object> campos) {
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> atualiarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos) {
 		
-		Optional<Restaurante> restauranteAtual = restauranteRepository.findById(Long.parseLong(campos.get("id").toString()));
+		Optional<Restaurante> restauranteAtual = restauranteRepository.findById(id);
 		
 		if (restauranteAtual.isEmpty()) {
 			return ResponseEntity.notFound().build();
@@ -92,7 +94,7 @@ public class RestauranteResource {
 		
 		merge(campos, restauranteAtual.get());
 		
-		return atualizar(restauranteAtual.get());
+		return atualizar(id, restauranteAtual.get());
 	}
 
 	private void merge(Map<String, Object> camposOrigem, Restaurante restauranteDestino) {

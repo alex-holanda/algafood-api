@@ -57,12 +57,12 @@ public class EstadoResource {
 		return ResponseEntity.created(uri).body(estado);
 	}
 	
-	@PutMapping
-	public ResponseEntity<Estado> atualizar(@RequestBody Estado estado) {
+	@PutMapping("/{id}")
+	public ResponseEntity<Estado> atualizar(@PathVariable Long id, @RequestBody Estado estado) {
 		Optional<Estado> estadoAtual = estadoRepository.findById(estado.getId());
 		
 		if (estadoAtual.isPresent()) {
-			BeanUtils.copyProperties(estado, estadoAtual.get());
+			BeanUtils.copyProperties(estado, estadoAtual.get(), "id");
 			
 			Estado estadoAtualizado = cadastroEstado.salvar(estadoAtual.get());
 			
@@ -72,13 +72,13 @@ public class EstadoResource {
 		return ResponseEntity.notFound().build();
 	}
 	
-	@DeleteMapping
-	public ResponseEntity<Void> remover(@RequestBody Estado estado) {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> remover(@PathVariable Long id) {
 		try {
-			cadastroEstado.excluir(estado);
+			cadastroEstado.excluir(id);
 			return ResponseEntity.noContent().build();
 		} catch (EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		} catch (EntidadeNaoEncontradaException e) {
 			return ResponseEntity.notFound().build();
 		}
