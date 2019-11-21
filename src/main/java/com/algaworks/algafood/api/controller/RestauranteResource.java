@@ -66,7 +66,7 @@ public class RestauranteResource {
 	public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante) {
 			
 		try {
-			Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restaurante.getId());
+			Optional<Restaurante> restauranteAtual = restauranteRepository.findById(id);
 			
 			if (restauranteAtual.isPresent()) {
 				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id");

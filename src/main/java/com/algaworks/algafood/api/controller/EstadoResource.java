@@ -59,7 +59,7 @@ public class EstadoResource {
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Estado> atualizar(@PathVariable Long id, @RequestBody Estado estado) {
-		Optional<Estado> estadoAtual = estadoRepository.findById(estado.getId());
+		Optional<Estado> estadoAtual = estadoRepository.findById(id);
 		
 		if (estadoAtual.isPresent()) {
 			BeanUtils.copyProperties(estado, estadoAtual.get(), "id");

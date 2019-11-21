@@ -91,7 +91,7 @@ public class TesteController {
 	@GetMapping("/restaurantes/count-por-cozinha")
 	public int restaurantesCountPorCozinha(Long cozinha) {
 		
-		return restauranteRepository.countByConzinhaId(cozinha);
+		return restauranteRepository.countByCozinhaId(cozinha);
 	}
 	
 	@GetMapping("/restaurantes/primeiro")
