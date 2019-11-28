@@ -26,7 +26,7 @@ import com.algaworks.algafood.domain.service.CadastroEstadoService;
 
 @RestController
 @RequestMapping("/estados")
-public class EstadoResource {
+public class EstadoController {
 
 	@Autowired
 	private EstadoRepository estadoRepository;

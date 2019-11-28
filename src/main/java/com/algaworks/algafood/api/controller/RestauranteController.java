@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/restaurantes")
-public class RestauranteResource {
+public class RestauranteController {
 
 	@Autowired
 	private RestauranteRepository restauranteRepository;
@@ -69,7 +69,8 @@ public class RestauranteResource {
 			Optional<Restaurante> restauranteAtual = restauranteRepository.findById(id);
 			
 			if (restauranteAtual.isPresent()) {
-				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id");
+				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), 
+						"id", "formasPagamento", "endereco", "dataCadastro");
 			
 				Restaurante restauranteAtualizado = cadastroRestaurante.salvar(restauranteAtual.get());
 				

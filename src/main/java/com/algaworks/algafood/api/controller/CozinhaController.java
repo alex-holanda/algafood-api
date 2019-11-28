@@ -26,7 +26,7 @@ import com.algaworks.algafood.domain.service.CadastroCozinhaService;
 
 @RestController
 @RequestMapping("/cozinhas")
-public class CozinhaResource {
+public class CozinhaController {
 
 	@Autowired
 	private CozinhaRepository cozinhaRepoistory;
