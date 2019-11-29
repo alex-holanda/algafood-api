@@ -6,16 +6,16 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
 @Generated(value = "org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor")
-@StaticMetamodel(Cozinha.class)
-public abstract class Cozinha_ {
+@StaticMetamodel(Grupo.class)
+public abstract class Grupo_ {
 
-	public static volatile SingularAttribute<Cozinha, String> nome;
-	public static volatile SingularAttribute<Cozinha, Long> id;
-	public static volatile ListAttribute<Cozinha, Restaurante> restaurantes;
+	public static volatile ListAttribute<Grupo, Permissao> permissoes;
+	public static volatile SingularAttribute<Grupo, String> nome;
+	public static volatile SingularAttribute<Grupo, Long> id;
 
+	public static final String PERMISSOES = "permissoes";
 	public static final String NOME = "nome";
 	public static final String ID = "id";
-	public static final String RESTAURANTES = "restaurantes";
 
 }
 
