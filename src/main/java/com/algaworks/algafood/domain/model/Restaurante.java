@@ -43,7 +43,7 @@ public class Restaurante {
 	private BigDecimal taxaFrete;
 	
 	@ManyToOne
-	@JoinColumn(name = "id_cozinha")
+	@JoinColumn(name = "cozinha_id")
 	private Cozinha cozinha;
 	
 	@JsonIgnore
@@ -60,6 +60,7 @@ public class Restaurante {
 	@Column(name = "data_atualizacao")
 	private LocalDateTime dataAtualizacao;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "restaurante")
 	private List<Produto> produtos = new ArrayList<>();
 	
