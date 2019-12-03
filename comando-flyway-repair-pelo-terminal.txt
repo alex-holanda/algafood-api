@@ -1,0 +1,1 @@
+./mvnw flyway:repair -Dflyway.configFiles=src/main/resources/flyway.properties
