@@ -33,7 +33,7 @@ CREATE TABLE produto (
     nome VARCHAR(80) NOT NULL,
     descricao TEXT NOT NULL,
     preco DECIMAL(10, 2) NOT NULL,
-    ativo TINYINT(1) NOT NULL,
+    ativo TINYINT NOT NULL,
     
     PRIMARY KEY (id)
 ) engine=InnoDB default charset=UTF8MB4;
