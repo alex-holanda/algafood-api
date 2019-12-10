@@ -39,9 +39,6 @@ public class CozinhaController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable Long id) {
 		
-//		Optional<Cozinha> cozinha = cozinhaRepoistory.findById(id);
-//		return cozinha.isPresent() ? ResponseEntity.ok(cozinha.get()) : ResponseEntity.notFound().build();
-		
 		return ResponseEntity.ok(cadastroCozinha.buscarOuFalahar(id)); 
 	}
 	
