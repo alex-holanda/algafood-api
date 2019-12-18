@@ -38,7 +38,6 @@ public class CozinhaController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable Long id) {
-		
 		return ResponseEntity.ok(cadastroCozinha.buscarOuFalahar(id)); 
 	}
 	
