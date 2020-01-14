@@ -3,6 +3,8 @@ package com.algaworks.algafood.api.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +45,7 @@ public class EstadoController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Estado> adicionar(@RequestBody Estado estado) {
+	public ResponseEntity<Estado> adicionar(@RequestBody @Valid Estado estado) {
 		estado = cadastroEstado.salvar(estado);
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(estado.getId()).toUri();
@@ -52,7 +54,7 @@ public class EstadoController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Estado> atualizar(@PathVariable Long id, @RequestBody Estado estado) {
+	public ResponseEntity<Estado> atualizar(@PathVariable Long id, @RequestBody @Valid Estado estado) {
 		Estado estadoAtual = cadastroEstado.buscarOuFalhar(id);
 
 		BeanUtils.copyProperties(estado, estadoAtual, "id");

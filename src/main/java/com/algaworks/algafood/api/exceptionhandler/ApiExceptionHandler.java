@@ -6,10 +6,14 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -27,8 +31,34 @@ import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
+	@Autowired
+	private MessageSource messageSource;
+	
 	private static final String MSG_ERRO_GENERICA_USUARIO_FINAL = "Ocorreu um erro interno inesperado no sistema. "
 			+ "Tente novamente e se o problema persistir, entre em contato com o administrador do sistema.";
+
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+		String detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente";
+
+		List<Problem.Field> problemFields = ex
+				.getBindingResult().getFieldErrors().stream().map(fieldError -> {
+					String message = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
+					
+					return Problem.Field.builder()
+						.name(fieldError.getField())
+						.userMessage(message)
+						.build();
+				})
+				.collect(Collectors.toList());
+
+		var problem = createProblemBuilder(status, ProblemType.DADOS_INVALIDOS, detail).userMessage(detail)
+				.fields(problemFields).build();
+
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
 
 	@Override
 	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
@@ -94,8 +124,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		HttpStatus status = HttpStatus.NOT_FOUND;
 		String detail = ex.getMessage();
 
-		var problem = createProblemBuilder(status, ProblemType.RECURSO_NAO_ENCONTRADO, detail)
-				.userMessage(detail).build();
+		var problem = createProblemBuilder(status, ProblemType.RECURSO_NAO_ENCONTRADO, detail).userMessage(detail)
+				.build();
 
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
@@ -116,9 +146,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		String detail = ex.getMessage();
-		
-		var problem = createProblemBuilder(status, ProblemType.ERRO_NEGOCIO, detail)
-				.userMessage(detail).build();
+
+		var problem = createProblemBuilder(status, ProblemType.ERRO_NEGOCIO, detail).userMessage(detail).build();
 
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
@@ -139,7 +168,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 //	MÉTODOS PRIVADOS
-	
+
 	private ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 

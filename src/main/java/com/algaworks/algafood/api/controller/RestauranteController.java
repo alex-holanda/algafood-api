@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.flywaydb.core.internal.util.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
@@ -55,7 +56,7 @@ public class RestauranteController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> adicionar(@RequestBody Restaurante restaurante) {
+	public ResponseEntity<?> adicionar(@RequestBody @Valid Restaurante restaurante) {
 
 		try {
 			restaurante = cadastroRestaurante.salvar(restaurante);
@@ -70,7 +71,7 @@ public class RestauranteController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Restaurante> atualizar(@PathVariable Long id, @RequestBody Restaurante restaurante) {
+	public ResponseEntity<Restaurante> atualizar(@PathVariable Long id, @RequestBody @Valid Restaurante restaurante) {
 
 		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(id);
 

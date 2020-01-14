@@ -3,6 +3,8 @@ package com.algaworks.algafood.api.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +44,7 @@ public class CozinhaController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Cozinha> adicionar(@RequestBody Cozinha cozinha) {
+	public ResponseEntity<Cozinha> adicionar(@RequestBody @Valid Cozinha cozinha) {
 		
 		cozinha = cadastroCozinha.salvar(cozinha);
 		
@@ -52,7 +54,7 @@ public class CozinhaController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Cozinha> atualizar(@PathVariable Long id, @RequestBody Cozinha cozinha) {
+	public ResponseEntity<Cozinha> atualizar(@PathVariable Long id, @RequestBody @Valid Cozinha cozinha) {
 		
 		Cozinha cozinhaAtual = cadastroCozinha.buscarOuFalahar(id);
 		
