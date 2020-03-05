@@ -1,6 +1,6 @@
 package com.algaworks.algafood.domain.model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
@@ -14,7 +14,7 @@ public abstract class Usuario_ {
 	public static volatile SingularAttribute<Usuario, String> nome;
 	public static volatile ListAttribute<Usuario, Grupo> grupos;
 	public static volatile SingularAttribute<Usuario, Long> id;
-	public static volatile SingularAttribute<Usuario, LocalDateTime> dataCadastro;
+	public static volatile SingularAttribute<Usuario, OffsetDateTime> dataCadastro;
 	public static volatile SingularAttribute<Usuario, String> email;
 
 	public static final String SENHA = "senha";

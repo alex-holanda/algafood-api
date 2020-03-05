@@ -1,7 +1,7 @@
 package com.algaworks.algafood.domain.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
@@ -13,13 +13,13 @@ public abstract class Restaurante_ {
 
 	public static volatile SingularAttribute<Restaurante, BigDecimal> taxaFrete;
 	public static volatile ListAttribute<Restaurante, FormaPagamento> formasPagamento;
-	public static volatile SingularAttribute<Restaurante, LocalDateTime> dataAtualizacao;
+	public static volatile SingularAttribute<Restaurante, OffsetDateTime> dataAtualizacao;
 	public static volatile ListAttribute<Restaurante, Produto> produtos;
 	public static volatile SingularAttribute<Restaurante, Cozinha> cozinha;
 	public static volatile SingularAttribute<Restaurante, Endereco> endereo;
 	public static volatile SingularAttribute<Restaurante, String> nome;
 	public static volatile SingularAttribute<Restaurante, Long> id;
-	public static volatile SingularAttribute<Restaurante, LocalDateTime> dataCadastro;
+	public static volatile SingularAttribute<Restaurante, OffsetDateTime> dataCadastro;
 
 	public static final String TAXA_FRETE = "taxaFrete";
 	public static final String FORMAS_PAGAMENTO = "formasPagamento";

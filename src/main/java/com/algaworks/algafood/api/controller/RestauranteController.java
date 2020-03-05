@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.algaworks.algafood.api.assembler.RestauranteInputDisassembler;
+import com.algaworks.algafood.api.assembler.RestauranteModelAssembler;
+import com.algaworks.algafood.api.model.RestauranteModel;
+import com.algaworks.algafood.api.model.input.RestauranteInput;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.Restaurante;
@@ -32,43 +36,49 @@ public class RestauranteController {
 
 	@Autowired
 	private CadastroRestauranteService cadastroRestaurante;
-
+	
 	@GetMapping
-	public ResponseEntity<List<Restaurante>> listar() {
+	public ResponseEntity<List<RestauranteModel>> listar() {
 
-		return ResponseEntity.ok(restauranteRepository.findAll());
+		return ResponseEntity.ok(RestauranteModelAssembler.toCollectionModel(restauranteRepository.findAll()));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Restaurante> buscar(@PathVariable Long id) {
+	public ResponseEntity<RestauranteModel> buscar(@PathVariable Long id) {
 
-		return ResponseEntity.ok(cadastroRestaurante.buscarOuFalhar(id));
+		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(id); 
+		
+		RestauranteModel restauranteModel = RestauranteModelAssembler.toModel(restaurante);
+		
+		return ResponseEntity.ok(restauranteModel);
 	}
 
 	@PostMapping
-	public ResponseEntity<?> adicionar(@RequestBody @Valid Restaurante restaurante) {
+	public ResponseEntity<RestauranteModel> adicionar(@RequestBody @Valid RestauranteInput restauranteInput) {
 
 		try {
-			restaurante = cadastroRestaurante.salvar(restaurante);
+			Restaurante restaurante = cadastroRestaurante.salvar(RestauranteInputDisassembler.toDomainObject(restauranteInput));
+			
+			URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{codigo}").buildAndExpand(restaurante.getId())
+					.toUri();
+			
+			return ResponseEntity.created(uri).body(RestauranteModelAssembler.toModel(restaurante));
 		} catch (EntidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
-
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{codigo}").buildAndExpand(restaurante.getId())
-				.toUri();
-
-		return ResponseEntity.created(uri).body(restaurante);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Restaurante> atualizar(@PathVariable Long id, @RequestBody @Valid Restaurante restaurante) {
-
-		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(id);
-
-		BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento", "endereco", "dataCadastro");
+	public ResponseEntity<RestauranteModel> atualizar(@PathVariable Long id, @RequestBody @Valid RestauranteInput restauranteInput) {
 
 		try {
-			return ResponseEntity.ok(cadastroRestaurante.salvar(restauranteAtual));
+			Restaurante restaurante = RestauranteInputDisassembler.toDomainObject(restauranteInput);
+			
+			Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(id);
+	
+			BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento", "endereco", "dataCadastro");
+
+			return ResponseEntity.ok(RestauranteModelAssembler.toModel(cadastroRestaurante.salvar(restauranteAtual)));
 		} catch (EntidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}

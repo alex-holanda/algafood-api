@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,13 +48,13 @@ public class Pedido {
 	private LocalDateTime dataCriacao;
 	
 	@Column(name = "data_confirmacao")
-	private LocalDateTime dataConfirmacao;
+	private OffsetDateTime dataConfirmacao;
 	
 	@Column(name = "data_engrega")
-	private LocalDateTime dataEntrega;
+	private OffsetDateTime dataEntrega;
 	
 	@Column(name = "data_cancelamento")
-	private LocalDateTime dataCancelamento;
+	private OffsetDateTime dataCancelamento;
 	
 	private StatusPedido status;
 	
