@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.algaworks.algafood.api.assembler.EstadoModelAssembler;
+import com.algaworks.algafood.api.disassembler.EstadoInputDisassembler;
+import com.algaworks.algafood.api.model.EstadoModel;
+import com.algaworks.algafood.api.model.input.EstadoInput;
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.repository.EstadoRepository;
 import com.algaworks.algafood.domain.service.CadastroEstadoService;
@@ -33,9 +36,9 @@ public class EstadoController {
 	private CadastroEstadoService cadastroEstado;
 
 	@GetMapping
-	public ResponseEntity<List<Estado>> listar() {
+	public ResponseEntity<List<EstadoModel>> listar() {
 
-		return ResponseEntity.ok().body(estadoRepository.findAll());
+		return ResponseEntity.ok().body(EstadoModelAssembler.toCollectionModel(estadoRepository.findAll()));
 	}
 
 	@GetMapping("/{id}")
@@ -45,21 +48,22 @@ public class EstadoController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Estado> adicionar(@RequestBody @Valid Estado estado) {
-		estado = cadastroEstado.salvar(estado);
+	public ResponseEntity<EstadoModel> adicionar(@RequestBody @Valid EstadoInput estadoInput) {
+		Estado estado = cadastroEstado.salvar(EstadoInputDisassembler.toDomainObject(estadoInput));
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(estado.getId()).toUri();
 
-		return ResponseEntity.created(uri).body(estado);
+		return ResponseEntity.created(uri).body(EstadoModelAssembler.toModel(estado));
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Estado> atualizar(@PathVariable Long id, @RequestBody @Valid Estado estado) {
+	public ResponseEntity<EstadoModel> atualizar(@PathVariable Long id, @RequestBody @Valid EstadoInput estadoInput) {
 		Estado estadoAtual = cadastroEstado.buscarOuFalhar(id);
 
-		BeanUtils.copyProperties(estado, estadoAtual, "id");
+		EstadoInputDisassembler.copyToDomainObject(estadoInput, estadoAtual);
+//		BeanUtils.copyProperties(estado, estadoAtual, "id");
 
-		return ResponseEntity.ok(cadastroEstado.salvar(estadoAtual));
+		return ResponseEntity.ok(EstadoModelAssembler.toModel(cadastroEstado.salvar(estadoAtual)));
 	}
 
 	@DeleteMapping("/{id}")

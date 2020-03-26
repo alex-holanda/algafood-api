@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.algaworks.algafood.api.assembler.CidadeModelAssembler;
+import com.algaworks.algafood.api.model.CidadeModel;
 import com.algaworks.algafood.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.Cidade;
@@ -35,18 +37,18 @@ public class CidadeController {
 	private CadastroCidadeService cadastroCidade;
 
 	@GetMapping
-	public ResponseEntity<List<Cidade>> listar() {
-		return ResponseEntity.ok(cidadeRepository.findAll());
+	public ResponseEntity<List<CidadeModel>> listar() {
+		return ResponseEntity.ok(CidadeModelAssembler.toCollectionModel(cidadeRepository.findAll()));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Cidade> buscar(@PathVariable Long id) {
+	public ResponseEntity<CidadeModel> buscar(@PathVariable Long id) {
 
-		return ResponseEntity.ok(cadastroCidade.buscarOuFalhar(id));
+		return ResponseEntity.ok(CidadeModelAssembler.toModel(cadastroCidade.buscarOuFalhar(id)));
 	}
 
 	@PostMapping
-	public ResponseEntity<Cidade> adicionar(@RequestBody @Valid Cidade cidade) {
+	public ResponseEntity<CidadeModel> adicionar(@RequestBody @Valid Cidade cidade) {
 
 		try {
 			cidade = cadastroCidade.salvar(cidade);
@@ -56,17 +58,17 @@ public class CidadeController {
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(cidade.getId()).toUri();
 
-		return ResponseEntity.created(uri).body(cidade);
+		return ResponseEntity.created(uri).body(CidadeModelAssembler.toModel(cidade));
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Cidade> atualizar(@PathVariable Long id, @RequestBody @Valid Cidade cidade) {
+	public ResponseEntity<CidadeModel> atualizar(@PathVariable Long id, @RequestBody @Valid Cidade cidade) {
 
 		Cidade cidadeAtual = cadastroCidade.buscarOuFalhar(id);
 		BeanUtils.copyProperties(cidade, cidadeAtual, "id");
 
 		try {
-			return ResponseEntity.ok(cadastroCidade.salvar(cidadeAtual));
+			return ResponseEntity.ok(CidadeModelAssembler.toModel(cadastroCidade.salvar(cidadeAtual)));
 		} catch (EstadoNaoEncontradoException e) {
 			throw new NegocioException(e.getMessage(), e);
 		}

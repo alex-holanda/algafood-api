@@ -13,6 +13,7 @@ public class RestauranteModelAssembler {
 	private static ModelMapper mapper = new ModelMapper();
 	
 	public static RestauranteModel toModel(Restaurante restaurante) {
+		
 		return mapper.map(restaurante, RestauranteModel.class);
 	}
 	
