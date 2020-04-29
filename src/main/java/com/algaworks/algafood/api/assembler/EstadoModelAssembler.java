@@ -4,19 +4,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.algaworks.algafood.api.model.EstadoModel;
 import com.algaworks.algafood.domain.model.Estado;
 
+@Component
 public class EstadoModelAssembler {
 
-	private static ModelMapper mapper = new ModelMapper();
+	@Autowired
+	private ModelMapper mapper;
 	
-	public static EstadoModel toModel(Estado estado) {
+	public EstadoModel toModel(Estado estado) {
 		return mapper.map(estado, EstadoModel.class);
 	}
 	
-	public static List<EstadoModel> toCollectionModel(List<Estado> estados) {
+	public List<EstadoModel> toCollectionModel(List<Estado> estados) {
 		return estados.stream().map(estado -> toModel(estado)).collect(Collectors.toList());
 	}
 }

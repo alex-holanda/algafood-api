@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,10 +37,16 @@ public class RestauranteController {
 	@Autowired
 	private CadastroRestauranteService cadastroRestaurante;
 	
+	@Autowired
+	private RestauranteModelAssembler assembler;
+	
+	@Autowired
+	private RestauranteInputDisassembler disassembler;
+	
 	@GetMapping
 	public ResponseEntity<List<RestauranteModel>> listar() {
 
-		return ResponseEntity.ok(RestauranteModelAssembler.toCollectionModel(restauranteRepository.findAll()));
+		return ResponseEntity.ok(assembler.toCollectionModel(restauranteRepository.findAll()));
 	}
 
 	@GetMapping("/{id}")
@@ -47,7 +54,7 @@ public class RestauranteController {
 
 		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(id); 
 		
-		RestauranteModel restauranteModel = RestauranteModelAssembler.toModel(restaurante);
+		RestauranteModel restauranteModel = assembler.toModel(restaurante);
 		
 		return ResponseEntity.ok(restauranteModel);
 	}
@@ -56,12 +63,12 @@ public class RestauranteController {
 	public ResponseEntity<RestauranteModel> adicionar(@RequestBody @Valid RestauranteInput restauranteInput) {
 
 		try {
-			Restaurante restaurante = cadastroRestaurante.salvar(RestauranteInputDisassembler.toDomainObject(restauranteInput));
+			Restaurante restaurante = cadastroRestaurante.salvar(disassembler.toDomainObject(restauranteInput));
 			
 			URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{codigo}").buildAndExpand(restaurante.getId())
 					.toUri();
 			
-			return ResponseEntity.created(uri).body(RestauranteModelAssembler.toModel(restaurante));
+			return ResponseEntity.created(uri).body(assembler.toModel(restaurante));
 		} catch (EntidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
@@ -73,11 +80,23 @@ public class RestauranteController {
 		try {
 			Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(id);
 	
-			RestauranteInputDisassembler.copyToDomainObject(restauranteInput, restauranteAtual);
+			disassembler.copyToDomainObject(restauranteInput, restauranteAtual);
 			
-			return ResponseEntity.ok(RestauranteModelAssembler.toModel(cadastroRestaurante.salvar(restauranteAtual)));
+			return ResponseEntity.ok(assembler.toModel(cadastroRestaurante.salvar(restauranteAtual)));
 		} catch (EntidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage());
 		}
+	}
+	
+	@PutMapping("/{restauranteId}/ativo")
+	public ResponseEntity<Void> ativar(@PathVariable Long restauranteId) {
+		cadastroRestaurante.ativar(restauranteId);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@DeleteMapping("/{restauranteId}/ativo")
+	public ResponseEntity<Void> inativar(@PathVariable Long restauranteId) {
+		cadastroRestaurante.inativar(restauranteId);
+		return ResponseEntity.noContent().build();
 	}
 }

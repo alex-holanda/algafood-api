@@ -35,25 +35,31 @@ public class CozinhaController {
 	@Autowired
 	private CadastroCozinhaService cadastroCozinha;
 	
+	@Autowired
+	private CozinhaModelAssembler assembler;
+	
+	@Autowired
+	private CozinhaInputDisassembler disassembler;
+	
 	@GetMapping
 	public ResponseEntity<List<CozinhaModel>> listar() {
 		
-		return ResponseEntity.ok().body(CozinhaModelAssembler.toCollectionModel(cozinhaRepoistory.findAll()));
+		return ResponseEntity.ok().body(assembler.toCollectionModel(cozinhaRepoistory.findAll()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<CozinhaModel> buscar(@PathVariable Long id) {
-		return ResponseEntity.ok(CozinhaModelAssembler.toModel(cadastroCozinha.buscarOuFalahar(id))); 
+		return ResponseEntity.ok(assembler.toModel(cadastroCozinha.buscarOuFalahar(id))); 
 	}
 	
 	@PostMapping
 	public ResponseEntity<CozinhaModel> adicionar(@RequestBody @Valid CozinhaInput cozinhaInput) {
 		
-		Cozinha cozinha = cadastroCozinha.salvar(CozinhaInputDisassembler.toDomainObject(cozinhaInput));
+		Cozinha cozinha = cadastroCozinha.salvar(disassembler.toDomainObject(cozinhaInput));
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(cozinha.getId()).toUri();
 		
-		return ResponseEntity.created(uri).body(CozinhaModelAssembler.toModel(cozinha));
+		return ResponseEntity.created(uri).body(assembler.toModel(cozinha));
 	}
 	
 	@PutMapping("/{id}")
@@ -61,9 +67,9 @@ public class CozinhaController {
 		
 		Cozinha cozinhaAtual = cadastroCozinha.buscarOuFalahar(id);
 		
-		CozinhaInputDisassembler.copyToDomainObject(cozinhaInput, cozinhaAtual);
+		disassembler.copyToDomainObject(cozinhaInput, cozinhaAtual);
 		
-		return ResponseEntity.ok(CozinhaModelAssembler.toModel(cadastroCozinha.salvar(cozinhaAtual)));
+		return ResponseEntity.ok(assembler.toModel(cadastroCozinha.salvar(cozinhaAtual)));
 	}
 	
 	@DeleteMapping("/{id}")

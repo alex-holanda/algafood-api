@@ -34,11 +34,17 @@ public class EstadoController {
 
 	@Autowired
 	private CadastroEstadoService cadastroEstado;
+	
+	@Autowired
+	private EstadoModelAssembler assembler;
+	
+	@Autowired
+	private EstadoInputDisassembler disassembler;
 
 	@GetMapping
 	public ResponseEntity<List<EstadoModel>> listar() {
 
-		return ResponseEntity.ok().body(EstadoModelAssembler.toCollectionModel(estadoRepository.findAll()));
+		return ResponseEntity.ok().body(assembler.toCollectionModel(estadoRepository.findAll()));
 	}
 
 	@GetMapping("/{id}")
@@ -49,21 +55,21 @@ public class EstadoController {
 
 	@PostMapping
 	public ResponseEntity<EstadoModel> adicionar(@RequestBody @Valid EstadoInput estadoInput) {
-		Estado estado = cadastroEstado.salvar(EstadoInputDisassembler.toDomainObject(estadoInput));
+		Estado estado = cadastroEstado.salvar(disassembler.toDomainObject(estadoInput));
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(estado.getId()).toUri();
 
-		return ResponseEntity.created(uri).body(EstadoModelAssembler.toModel(estado));
+		return ResponseEntity.created(uri).body(assembler.toModel(estado));
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<EstadoModel> atualizar(@PathVariable Long id, @RequestBody @Valid EstadoInput estadoInput) {
 		Estado estadoAtual = cadastroEstado.buscarOuFalhar(id);
 
-		EstadoInputDisassembler.copyToDomainObject(estadoInput, estadoAtual);
+		disassembler.copyToDomainObject(estadoInput, estadoAtual);
 //		BeanUtils.copyProperties(estado, estadoAtual, "id");
 
-		return ResponseEntity.ok(EstadoModelAssembler.toModel(cadastroEstado.salvar(estadoAtual)));
+		return ResponseEntity.ok(assembler.toModel(cadastroEstado.salvar(estadoAtual)));
 	}
 
 	@DeleteMapping("/{id}")
