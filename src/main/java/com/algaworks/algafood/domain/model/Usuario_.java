@@ -2,7 +2,7 @@ package com.algaworks.algafood.domain.model;
 
 import java.time.OffsetDateTime;
 import javax.annotation.Generated;
-import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
@@ -12,7 +12,7 @@ public abstract class Usuario_ {
 
 	public static volatile SingularAttribute<Usuario, String> senha;
 	public static volatile SingularAttribute<Usuario, String> nome;
-	public static volatile ListAttribute<Usuario, Grupo> grupos;
+	public static volatile SetAttribute<Usuario, Grupo> grupos;
 	public static volatile SingularAttribute<Usuario, Long> id;
 	public static volatile SingularAttribute<Usuario, OffsetDateTime> dataCadastro;
 	public static volatile SingularAttribute<Usuario, String> email;
