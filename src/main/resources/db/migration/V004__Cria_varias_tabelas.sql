@@ -70,7 +70,8 @@ CREATE TABLE usuario (
     senha VARCHAR(255) NOT NULL,
     data_cadastro DATETIME NOT NULL,
     
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT u_email UNIQUE (email)
 ) engine=InnoDB default charset=UTF8MB4;
 
 CREATE TABLE usuario_grupo (

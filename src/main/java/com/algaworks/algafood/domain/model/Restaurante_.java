@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
@@ -13,8 +14,9 @@ public abstract class Restaurante_ {
 
 	public static volatile SingularAttribute<Restaurante, BigDecimal> taxaFrete;
 	public static volatile SingularAttribute<Restaurante, Boolean> ativo;
+	public static volatile SingularAttribute<Restaurante, Boolean> aberto;
 	public static volatile SingularAttribute<Restaurante, Endereco> endereco;
-	public static volatile ListAttribute<Restaurante, FormaPagamento> formasPagamento;
+	public static volatile SetAttribute<Restaurante, FormaPagamento> formasPagamento;
 	public static volatile SingularAttribute<Restaurante, OffsetDateTime> dataAtualizacao;
 	public static volatile ListAttribute<Restaurante, Produto> produtos;
 	public static volatile SingularAttribute<Restaurante, Cozinha> cozinha;
@@ -24,6 +26,7 @@ public abstract class Restaurante_ {
 
 	public static final String TAXA_FRETE = "taxaFrete";
 	public static final String ATIVO = "ativo";
+	public static final String ABERTO = "aberto";
 	public static final String ENDERECO = "endereco";
 	public static final String FORMAS_PAGAMENTO = "formasPagamento";
 	public static final String DATA_ATUALIZACAO = "dataAtualizacao";
