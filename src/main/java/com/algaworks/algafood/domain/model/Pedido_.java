@@ -1,7 +1,6 @@
 package com.algaworks.algafood.domain.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.ListAttribute;
@@ -25,7 +24,7 @@ public abstract class Pedido_ {
 	public static volatile SingularAttribute<Pedido, BigDecimal> valorTotal;
 	public static volatile SingularAttribute<Pedido, OffsetDateTime> dataEntrega;
 	public static volatile SingularAttribute<Pedido, Long> id;
-	public static volatile SingularAttribute<Pedido, LocalDateTime> dataCriacao;
+	public static volatile SingularAttribute<Pedido, OffsetDateTime> dataCriacao;
 	public static volatile SingularAttribute<Pedido, StatusPedido> status;
 
 	public static final String FORMA_PAGAMENTO = "formaPagamento";

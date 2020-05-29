@@ -20,17 +20,21 @@ public class CadastroProdutoService {
 	@Autowired
 	private CadastroRestauranteService restauranteService;
 	
-	public List<Produto> listar(Long restauranteId) {
+	public List<Produto> listar(Long restauranteId, Boolean incluirInativos) {
 		Restaurante restaurante = restauranteService.buscarOuFalhar(restauranteId);
 		
-		return produtoRepository.findByRestaurante(restaurante);
+		if (incluirInativos) {
+			return produtoRepository.findByRestaurante(restaurante);
+		}
+		
+		return produtoRepository.findByRestauranteAndAtivoTrue(restaurante);
 	}
 	
 	public Produto buscar(Long restauranteId, Long produtoId) {
 		
 		Restaurante restaurante = restauranteService.buscarOuFalhar(restauranteId);
 		
-		return buscarOuFalahr(restaurante, produtoId);
+		return buscarOuFalhar(restaurante, produtoId);
 	}
 	
 	@Transactional
@@ -47,7 +51,7 @@ public class CadastroProdutoService {
 		return salvar(restauranteId, produto);
 	}
 	
-	private Produto buscarOuFalahr(Restaurante restaurante, Long produtoId) {
+	private Produto buscarOuFalhar(Restaurante restaurante, Long produtoId) {
 		return produtoRepository.findByRestauranteAndId(restaurante, produtoId)
 					.orElseThrow(() -> new ProdutoNaoEncontradoException(restaurante.getId(), produtoId));
 	}

@@ -1,6 +1,5 @@
 CREATE TABLE pedido (
 	id BIGINT NOT NULL AUTO_INCREMENT,
-    codigo VARCHAR(40) NOT NULL,
     subtotal DECIMAL(10, 2) NOT NULL,
     taxa_frete DECIMAL(10, 2) NOT NULL,
     valor_total DECIMAL(10, 2) NOT NULL,
@@ -17,7 +16,7 @@ CREATE TABLE pedido (
     endereco_bairro VARCHAR(100) NOT NULL,
     
     status VARCHAR(10) NOT NULL,
-    data_craicao DATETIME NOT NULL,
+    data_criacao DATETIME NOT NULL,
     data_confirmacao DATETIME NULL,
     data_entrega DATETIME NULL,
     data_cancelamento DATETIME NULL,

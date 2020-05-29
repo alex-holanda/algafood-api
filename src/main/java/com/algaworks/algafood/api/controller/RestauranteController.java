@@ -21,11 +21,13 @@ import com.algaworks.algafood.api.assembler.RestauranteModelAssembler;
 import com.algaworks.algafood.api.disassembler.RestauranteInputDisassembler;
 import com.algaworks.algafood.api.model.RestauranteModel;
 import com.algaworks.algafood.api.model.input.RestauranteInput;
+import com.algaworks.algafood.api.model.view.RestauranteView;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.RestauranteRepository;
 import com.algaworks.algafood.domain.service.CadastroRestauranteService;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/restaurantes")
@@ -43,10 +45,24 @@ public class RestauranteController {
 	@Autowired
 	private RestauranteInputDisassembler disassembler;
 	
-	@GetMapping
+//	@GetMapping
 	public ResponseEntity<List<RestauranteModel>> listar() {
 
 		return ResponseEntity.ok(assembler.toCollectionModel(restauranteRepository.findAll()));
+	}
+	
+	@JsonView(RestauranteView.Resumo.class)
+	@GetMapping(params = "projecao=resumo")
+	public ResponseEntity<List<RestauranteModel>> listarResumido() {
+
+		return listar();
+	}
+	
+	@JsonView(RestauranteView.Resumo.class)
+	@GetMapping(params = "projecao=apensa-nome")
+	public ResponseEntity<List<RestauranteModel>> listarApenasNome() {
+
+		return listar();
 	}
 
 	@GetMapping("/{id}")
@@ -97,6 +113,22 @@ public class RestauranteController {
 	@DeleteMapping("/{restauranteId}/ativo")
 	public ResponseEntity<Void> inativar(@PathVariable Long restauranteId) {
 		cadastroRestaurante.inativar(restauranteId);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PutMapping("/ativacoes")
+	public ResponseEntity<Void> ativarMultiplos(@RequestBody List<Long> restauranteIds) {
+		
+		cadastroRestaurante.ativar(restauranteIds);
+		
+		return ResponseEntity.noContent().build();
+	}
+	
+	@DeleteMapping("/ativacoes")
+	public ResponseEntity<Void> inativarMultiplos(@RequestBody List<Long> restauranteIds) {
+		
+		cadastroRestaurante.inativar(restauranteIds);
+		
 		return ResponseEntity.noContent().build();
 	}
 	
