@@ -5,18 +5,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.algaworks.algafood.domain.model.Pedido;
+import com.algaworks.algafood.domain.repository.PedidoRepository;
 
 @Service
 public class FluxoPedidoService {
 
 	@Autowired
 	private CadastroPedidoService pedidoService;
+	
+	@Autowired
+	private PedidoRepository pedidoRepository;
 
 	@Transactional
 	public void confirmar(String codigoPedido) {
 		Pedido pedido = pedidoService.buscar(codigoPedido);
 
 		pedido.confirmar();
+		
+//		USADO SOMENTE PARA REGISTRAR O EVENTO NO AGGREGATION ROOT
+		pedidoRepository.save(pedido); 
 	}
 
 	@Transactional
@@ -31,5 +38,7 @@ public class FluxoPedidoService {
 		Pedido pedido = pedidoService.buscar(codigoPedido);
 		
 		pedido.cancelar();
+		
+		pedidoRepository.save(pedido);
 	}
 }

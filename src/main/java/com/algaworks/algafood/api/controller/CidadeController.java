@@ -30,7 +30,7 @@ import com.algaworks.algafood.domain.service.CadastroCidadeService;
 @RestController
 @RequestMapping("/cidades")
 public class CidadeController {
-
+	
 	@Autowired
 	private CidadeRepository cidadeRepository;
 
@@ -50,7 +50,7 @@ public class CidadeController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<CidadeModel> buscar(@PathVariable Long id) {
-
+		
 		return ResponseEntity.ok(assembler.toModel(cadastroCidade.buscarOuFalhar(id)));
 	}
 
