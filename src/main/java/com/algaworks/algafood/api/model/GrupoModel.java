@@ -1,7 +1,6 @@
 package com.algaworks.algafood.api.model;
 
-import javax.validation.constraints.NotBlank;
-
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +8,9 @@ import lombok.Setter;
 @Setter
 public class GrupoModel {
 
+	@ApiModelProperty(example = "1")
 	private Long id;
 	
-	@NotBlank
+	@ApiModelProperty(example = "Administrador")
 	private String nome;
 }

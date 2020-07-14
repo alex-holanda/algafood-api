@@ -45,7 +45,7 @@ public class RestauranteController {
 	@Autowired
 	private RestauranteInputDisassembler disassembler;
 	
-//	@GetMapping
+	@GetMapping
 	public ResponseEntity<List<RestauranteModel>> listar() {
 
 		return ResponseEntity.ok(assembler.toCollectionModel(restauranteRepository.findAll()));
