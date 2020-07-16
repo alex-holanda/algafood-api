@@ -1,4 +1,4 @@
-package com.algaworks.algafood.core.openapi;
+package com.algaworks.algafood.core.springfox;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,11 +10,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.model.CozinhaModel;
+import com.algaworks.algafood.api.model.PedidoResumoModel;
 import com.algaworks.algafood.api.openapi.model.CozinhasModelOpenApi;
 import com.algaworks.algafood.api.openapi.model.PageableModelOpenApi;
+import com.algaworks.algafood.api.openapi.model.PedidosResumoModelOpenApi;
 import com.fasterxml.classmate.TypeResolver;
 
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
@@ -50,13 +53,30 @@ public class SpringFoxConfig {
 				.globalResponseMessage(RequestMethod.POST, globalPostResponseMessage())
 				.globalResponseMessage(RequestMethod.PUT, globalPostResponseMessage())
 				.globalResponseMessage(RequestMethod.DELETE, globalDeleteResponseMessage())
+//				.globalOperationParameters(Arrays.asList(
+//						new ParameterBuilder()
+//							.name("campos")
+//							.description("Nomes das propriedades para filtrar na resposta, separados por vírgula")
+//							.parameterType("query")
+//							.modelRef(new ModelRef("string"))
+//							.build()
+//						))
+				.ignoredParameterTypes(ServletWebRequest.class)
 				.additionalModels(typeResolver.resolve(Problem.class))
 				.directModelSubstitute(Pageable.class, PageableModelOpenApi.class)
-				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Page.class, CozinhaModel.class), CozinhasModelOpenApi.class))
+				.alternateTypeRules(AlternateTypeRules.newRule(
+		                    typeResolver.resolve(Page.class, CozinhaModel.class),
+		                    CozinhasModelOpenApi.class))
+	            .alternateTypeRules(AlternateTypeRules.newRule(
+		                    typeResolver.resolve(Page.class, PedidoResumoModel.class),
+		                    PedidosResumoModelOpenApi.class))
 				.apiInfo(apiInfo())
 				.tags(
 						new Tag("Cidades", "Gerencia as cidades"),
-						new Tag("Grupos", "Gerencia os grupos de usuários")
+						new Tag("Grupos", "Gerencia os grupos de usuários"),
+						new Tag("Cozinhas", "Gerencia de cozinhas"),
+						new Tag("Formas de Pagamento", "Gerencia as formas de pagamento"),
+						new Tag("Pedidos", "Gerencia os pedidos")
 					);
 	}
 	
@@ -117,7 +137,7 @@ public class SpringFoxConfig {
 		return new ApiInfoBuilder()
 					.title("AlgaFood API")
 					.description("API aberta para clientes e restaurantes")
-					.version("1")
+					.version("1.0.1")
 					.contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com"))
 					.build();
 	}

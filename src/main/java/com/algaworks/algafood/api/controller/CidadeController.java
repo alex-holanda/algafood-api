@@ -1,11 +1,11 @@
 package com.algaworks.algafood.api.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,14 +46,20 @@ public class CidadeController implements CidadeControllerOpenApi {
 	private CidadeInputDisassembler disassembler;
 
 	@GetMapping
-	public ResponseEntity<List<CidadeModel>> listar() {
+	public ResponseEntity<CollectionModel<CidadeModel>> listar() {
+		
 		return ResponseEntity.ok(assembler.toCollectionModel(cidadeRepository.findAll()));
+		
+//		cidadesCollectionModel.add(linkTo(CidadeController.class).withSelfRel());
+		
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<CidadeModel> buscar(@PathVariable Long id) {
 
-		return ResponseEntity.ok(assembler.toModel(cadastroCidade.buscarOuFalhar(id)));
+		CidadeModel cidadeModel = assembler.toModel(cadastroCidade.buscarOuFalhar(id)); 
+
+		return ResponseEntity.ok(cidadeModel);
 	}
 
 	@PostMapping

@@ -1,11 +1,11 @@
 package com.algaworks.algafood.api.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +39,7 @@ public class UsuarioController {
 	private UsuarioInputDisassembler usuarioDisassembler;
 	
 	@GetMapping
-	public ResponseEntity<List<UsuarioModel>> listar() {
+	public ResponseEntity<CollectionModel<UsuarioModel>> listar() {
 		return ResponseEntity.ok(usuarioAssembler.toCollectionModel(usuarioService.listar()));
 	}
 	

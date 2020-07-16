@@ -1,11 +1,11 @@
 package com.algaworks.algafood.api.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,15 +42,15 @@ public class EstadoController {
 	private EstadoInputDisassembler disassembler;
 
 	@GetMapping
-	public ResponseEntity<List<EstadoModel>> listar() {
+	public ResponseEntity<CollectionModel<EstadoModel>> listar() {
 
 		return ResponseEntity.ok().body(assembler.toCollectionModel(estadoRepository.findAll()));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Estado> buscar(@PathVariable Long id) {
+	public ResponseEntity<EstadoModel> buscar(@PathVariable Long id) {
 
-		return ResponseEntity.ok(cadastroEstado.buscarOuFalhar(id));
+		return ResponseEntity.ok(assembler.toModel(cadastroEstado.buscarOuFalhar(id)));
 	}
 
 	@PostMapping
