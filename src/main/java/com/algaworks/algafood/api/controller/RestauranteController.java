@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,21 +47,21 @@ public class RestauranteController {
 	private RestauranteInputDisassembler disassembler;
 	
 	@GetMapping
-	public ResponseEntity<List<RestauranteModel>> listar() {
+	public ResponseEntity<CollectionModel<RestauranteModel>> listar() {
 
 		return ResponseEntity.ok(assembler.toCollectionModel(restauranteRepository.findAll()));
 	}
 	
 	@JsonView(RestauranteView.Resumo.class)
 	@GetMapping(params = "projecao=resumo")
-	public ResponseEntity<List<RestauranteModel>> listarResumido() {
+	public ResponseEntity<CollectionModel<RestauranteModel>> listarResumido() {
 
 		return listar();
 	}
 	
 	@JsonView(RestauranteView.Resumo.class)
 	@GetMapping(params = "projecao=apensa-nome")
-	public ResponseEntity<List<RestauranteModel>> listarApenasNome() {
+	public ResponseEntity<CollectionModel<RestauranteModel>> listarApenasNome() {
 
 		return listar();
 	}

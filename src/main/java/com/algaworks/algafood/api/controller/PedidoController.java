@@ -1,14 +1,14 @@
 package com.algaworks.algafood.api.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +26,12 @@ import com.algaworks.algafood.api.model.PedidoModel;
 import com.algaworks.algafood.api.model.PedidoResumoModel;
 import com.algaworks.algafood.api.model.input.PedidoInput;
 import com.algaworks.algafood.api.openapi.controller.PedidoControllerOpenApi;
+import com.algaworks.algafood.core.data.PageWrapper;
 import com.algaworks.algafood.core.data.PageableTranslator;
 import com.algaworks.algafood.domain.fielter.PedidoFilter;
 import com.algaworks.algafood.domain.model.Pedido;
 import com.algaworks.algafood.domain.service.CadastroPedidoService;
 import com.google.common.collect.ImmutableMap;
-
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 
 @RestController
 @RequestMapping(path = "/pedidos", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,18 +49,20 @@ public class PedidoController implements PedidoControllerOpenApi {
 	@Autowired
 	private PedidoInputDisassembler pedidoInputDisassembler;
 	
-	@ApiImplicitParams({
-		@ApiImplicitParam(value = "Nomes das propriedades para filtrar na resposta, separados por vírgula",
-					name = "campos", paramType = "query", type = "string")
-	})
+	@Autowired
+	private PagedResourcesAssembler<Pedido> pagedResourceAssembler;
+	
 	@GetMapping
-	public ResponseEntity<Page<PedidoResumoModel>> pesquisar(PedidoFilter filtro, Pageable pageable) {
-		pageable = traduzirPageable(pageable);
-		Page<Pedido> pedidosPage = pedidoService.listar(filtro, pageable);
-		List<PedidoResumoModel> pedidosResumoModel = pedidoResumoModelAssembler.toCollectionModel(pedidosPage.getContent());
-		Page<PedidoResumoModel> pedidosResumoModelPage = new PageImpl<>(pedidosResumoModel, pageable, pedidosPage.getTotalElements());
+	public ResponseEntity<PagedModel<PedidoResumoModel>> pesquisar(PedidoFilter filtro, Pageable pageable) {
+		var pageableTraduzido = traduzirPageable(pageable);
 		
-		return ResponseEntity.ok(pedidosResumoModelPage);
+		Page<Pedido> pedidosPage = pedidoService.listar(filtro, pageableTraduzido);
+		
+		var pedidosPagedModel = pagedResourceAssembler.toModel(pedidosPage, pedidoResumoModelAssembler);
+		
+		pedidosPage = new PageWrapper<>(pedidosPage, pageable);
+		
+		return ResponseEntity.ok(pedidosPagedModel);
 	}
 	
 	@GetMapping("/{codigoPedido}")
