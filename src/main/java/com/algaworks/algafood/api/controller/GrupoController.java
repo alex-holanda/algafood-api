@@ -1,11 +1,11 @@
 package com.algaworks.algafood.api.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,9 +40,10 @@ public class GrupoController implements GrupoControllerOpenApi {
 	private GrupoInputDisassembler grupoDisasemmbler;
 	
 	@GetMapping
-	public ResponseEntity<List<GrupoModel>> listar() {
+	public ResponseEntity<CollectionModel<GrupoModel>> listar() {
+		var grupoCollectionModel = grupoAssembler.toCollectionModel(grupoService.listar());
 		
-		return ResponseEntity.ok(grupoAssembler.toCollectionModel(grupoService.listar()));
+		return ResponseEntity.ok(grupoCollectionModel);
 	}
 	
 	@GetMapping("/{id}")

@@ -72,7 +72,7 @@ public class RestauranteProdutoFotoController {
 	public ResponseEntity<FotoProdutoModel> buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 
 		FotoProduto foto = catalogoFotoProduto.buscar(restauranteId, produtoId);
-
+		
 		return ResponseEntity.ok(fotoProdutoModelAssembler.toModel(foto));
 	}
 

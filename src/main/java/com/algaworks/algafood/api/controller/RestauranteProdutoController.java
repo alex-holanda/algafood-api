@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.algaworks.algafood.api.algalinks.AlgaLinks;
 import com.algaworks.algafood.api.assembler.ProdutoModelAssembler;
 import com.algaworks.algafood.api.disassembler.ProdutoInputDisassembler;
 import com.algaworks.algafood.api.model.ProdutoModel;
@@ -37,13 +39,20 @@ public class RestauranteProdutoController {
 	@Autowired
 	private ProdutoInputDisassembler produtoInputDisassembler;
 	
+	@Autowired
+	private AlgaLinks algaLinks;
+	
 	@GetMapping
-	public ResponseEntity<List<ProdutoModel>> listar(@PathVariable Long restauranteId, 
+	public ResponseEntity<CollectionModel<ProdutoModel>> listar(@PathVariable Long restauranteId, 
 				@RequestParam(required = false, defaultValue = "false") Boolean incluirInativos) {
 		
 		List<Produto> produtos = produtoService.listar(restauranteId, incluirInativos);
 		
-		return ResponseEntity.ok(produtoModelAssembler.toCollectionModel(produtos));
+		var produtosModel = produtoModelAssembler.toCollectionModel(produtos);
+		
+		produtosModel.add(algaLinks.linkToRestauranteProduto(restauranteId));
+		
+		return ResponseEntity.ok(produtosModel);
 	}
 	
 	@GetMapping("/{produtoId}")
