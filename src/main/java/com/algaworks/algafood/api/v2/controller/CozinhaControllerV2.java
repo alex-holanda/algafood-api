@@ -1,4 +1,4 @@
-package com.algaworks.algafood.api.v1.controller;
+package com.algaworks.algafood.api.v2.controller;
 
 import java.net.URI;
 
@@ -21,21 +21,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.algaworks.algafood.api.v1.assembler.CozinhaModelAssembler;
-import com.algaworks.algafood.api.v1.disassembler.CozinhaInputDisassembler;
-import com.algaworks.algafood.api.v1.model.CozinhaModel;
-import com.algaworks.algafood.api.v1.model.input.CozinhaInput;
-import com.algaworks.algafood.api.v1.openapi.controller.CozinhaControllerOpenApi;
+import com.algaworks.algafood.api.v2.assembler.CozinhaModelAssemblerV2;
+import com.algaworks.algafood.api.v2.disassembler.CozinhaInputDisassemblerV2;
+import com.algaworks.algafood.api.v2.model.CozinhaModelV2;
+import com.algaworks.algafood.api.v2.model.input.CozinhaInputV2;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
 import com.algaworks.algafood.domain.service.CadastroCozinhaService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @RestController
-@RequestMapping(path = "/v1/cozinhas", produces = MediaType.APPLICATION_JSON_VALUE)
-public class CozinhaController implements CozinhaControllerOpenApi {
+@RequestMapping(path = "/v2/cozinhas", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CozinhaControllerV2 {
 
 	@Autowired
 	private CozinhaRepository cozinhaRepoistory;
@@ -44,18 +40,16 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	private CadastroCozinhaService cadastroCozinha;
 	
 	@Autowired
-	private CozinhaModelAssembler cozinhaModelAssembler;
+	private CozinhaModelAssemblerV2 cozinhaModelAssembler;
 	
 	@Autowired
-	private CozinhaInputDisassembler disassembler;
+	private CozinhaInputDisassemblerV2 disassembler;
 	
 	@Autowired
 	private PagedResourcesAssembler<Cozinha> pagedResourceAssembler;
 	
 	@GetMapping
-	public ResponseEntity<PagedModel<CozinhaModel>> listar(Pageable pageable) {
-		log.info("Consultando cozinhas com páginas de {} registros...", pageable.getPageSize());
-		
+	public ResponseEntity<PagedModel<CozinhaModelV2>> listar(Pageable pageable) {
 		Page<Cozinha> cozinhasPage = cozinhaRepoistory.findAll(pageable);
 
 		var cozinhasPagedModel = pagedResourceAssembler.toModel(cozinhasPage, cozinhaModelAssembler);
@@ -64,12 +58,12 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<CozinhaModel> buscar(@PathVariable Long id) {
+	public ResponseEntity<CozinhaModelV2> buscar(@PathVariable Long id) {
 		return ResponseEntity.ok(cozinhaModelAssembler.toModel(cadastroCozinha.buscarOuFalahar(id))); 
 	}
 	
 	@PostMapping
-	public ResponseEntity<CozinhaModel> adicionar(@RequestBody @Valid CozinhaInput cozinhaInput) {
+	public ResponseEntity<CozinhaModelV2> adicionar(@RequestBody @Valid CozinhaInputV2 cozinhaInput) {
 		
 		Cozinha cozinha = cadastroCozinha.salvar(disassembler.toDomainObject(cozinhaInput));
 		
@@ -79,7 +73,7 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<CozinhaModel> atualizar(@PathVariable Long id, @RequestBody @Valid CozinhaInput cozinhaInput) {
+	public ResponseEntity<CozinhaModelV2> atualizar(@PathVariable Long id, @RequestBody @Valid CozinhaInputV2 cozinhaInput) {
 		
 		Cozinha cozinhaAtual = cadastroCozinha.buscarOuFalahar(id);
 		

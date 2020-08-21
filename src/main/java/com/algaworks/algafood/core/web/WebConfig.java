@@ -22,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
 	public Filter shallowEtagHeaderFilter() {
 		return new ShallowEtagHeaderFilter();
 	}
-	
+
 	/*
 	 * SpringFox
 	 * */

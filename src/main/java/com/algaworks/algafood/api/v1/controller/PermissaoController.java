@@ -13,7 +13,7 @@ import com.algaworks.algafood.api.v1.model.PermissaoModel;
 import com.algaworks.algafood.domain.service.CadastroPermissaoService;
 
 @RestController
-@RequestMapping(path = "/permissoes", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/v1/permissoes", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PermissaoController {
 
 	@Autowired

@@ -32,6 +32,9 @@
 
 		<!-- SpringFox -->
 		<springfox.version>2.9.2</springfox.version>
+		
+		<!-- Logback - Loggly -->
+		<loggly.verion>0.1.5</loggly.verion>
 	</properties>
 
 	<dependencies>
@@ -147,6 +150,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-freemarker</artifactId>
 		</dependency>
+		
+		<!-- LOGBACK loggly -->
+		<dependency>
+			<groupId>org.logback-extensions</groupId>
+			<artifactId>logback-ext-loggly</artifactId>
+			<version>${loggly.verion}</version>
+		</dependency>
 
 		<!-- SpringFox -->
 		<dependency>
@@ -179,6 +189,15 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

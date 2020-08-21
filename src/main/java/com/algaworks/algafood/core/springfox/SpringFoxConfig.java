@@ -22,6 +22,7 @@ import com.fasterxml.classmate.TypeResolver;
 
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.schema.AlternateTypeRules;
@@ -40,13 +41,15 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SpringFoxConfig {
 
 	@Bean
-	public Docket apiDocket() {
+	public Docket apiDocketV1() {
 		var typeResolver = new TypeResolver();
 		
 		return new Docket(DocumentationType.SWAGGER_2)
+				.groupName("V1")
 				.select()
 //					.apis(RequestHandlerSelectors.any()) todos os endpoints da api
 					.apis(RequestHandlerSelectors.basePackage("com.algaworks.algafood.api"))
+					.paths(PathSelectors.ant("/v1/**"))
 				.build()
 				.useDefaultResponseMessages(false)
 				.globalResponseMessage(RequestMethod.GET, globalGetResponseMessage())
@@ -70,13 +73,39 @@ public class SpringFoxConfig {
 	            .alternateTypeRules(AlternateTypeRules.newRule(
 		                    typeResolver.resolve(Page.class, PedidoResumoModel.class),
 		                    PedidosResumoModelOpenApi.class))
-				.apiInfo(apiInfo())
+				.apiInfo(apiInfoV1())
 				.tags(
 						new Tag("Cidades", "Gerencia as cidades"),
 						new Tag("Grupos", "Gerencia os grupos de usuários"),
 						new Tag("Cozinhas", "Gerencia de cozinhas"),
 						new Tag("Formas de Pagamento", "Gerencia as formas de pagamento"),
 						new Tag("Pedidos", "Gerencia os pedidos")
+					);
+	}
+	
+	@Bean
+	public Docket apiDocketV2() {
+		var typeResolver = new TypeResolver();
+		
+		return new Docket(DocumentationType.SWAGGER_2)
+				.groupName("V2")
+				.select()
+//					.apis(RequestHandlerSelectors.any()) todos os endpoints da api
+					.apis(RequestHandlerSelectors.basePackage("com.algaworks.algafood.api"))
+					.paths(PathSelectors.ant("/v2/**"))
+				.build()
+				.useDefaultResponseMessages(false)
+				.globalResponseMessage(RequestMethod.GET, globalGetResponseMessage())
+				.globalResponseMessage(RequestMethod.POST, globalPostResponseMessage())
+				.globalResponseMessage(RequestMethod.PUT, globalPostResponseMessage())
+				.globalResponseMessage(RequestMethod.DELETE, globalDeleteResponseMessage())
+				.ignoredParameterTypes(ServletWebRequest.class)
+				.additionalModels(typeResolver.resolve(Problem.class))
+				.directModelSubstitute(Pageable.class, PageableModelOpenApi.class)
+				.apiInfo(apiInfoV2())
+				.tags(
+						new Tag("Cidades", "Gerencia as cidades"),
+						new Tag("Cozinhas", "Gerencia de cozinhas")
 					);
 	}
 	
@@ -133,11 +162,20 @@ public class SpringFoxConfig {
 				);
 	}
 	
-	private ApiInfo apiInfo() {
+	private ApiInfo apiInfoV1() {
 		return new ApiInfoBuilder()
 					.title("AlgaFood API")
 					.description("API aberta para clientes e restaurantes")
 					.version("1.0.1")
+					.contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com"))
+					.build();
+	}
+	
+	private ApiInfo apiInfoV2() {
+		return new ApiInfoBuilder()
+					.title("AlgaFood API")
+					.description("API aberta para clientes e restaurantes")
+					.version("2.0.1")
 					.contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com"))
 					.build();
 	}
