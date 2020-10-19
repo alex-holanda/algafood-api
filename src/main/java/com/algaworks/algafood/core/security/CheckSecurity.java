@@ -56,7 +56,7 @@ public @interface CheckSecurity {
 		@Target(METHOD)
 		public @interface PodeBuscar { }
 		
-		@PreAuthorize("@algaSecurity.pedePesquisarPedidos(#filtro.clienteId, #filtro.restauranteId)")
+		@PreAuthorize("@algaSecurity.podePesquisarPedidos(#filtro.clienteId, #filtro.restauranteId)")
 		@Retention(RUNTIME)
 		@Target(METHOD)
 		public @interface PodePesquisar{ }

@@ -32,12 +32,18 @@
 
 		<!-- SpringFox -->
 		<springfox.version>2.9.2</springfox.version>
-		
+
 		<!-- Logback - Loggly -->
 		<loggly.verion>0.1.5</loggly.verion>
-		
+
 		<!-- OAuth2 OIDC SDK -->
 		<oauth2-oidc-sdk.version>6.21.2</oauth2-oidc-sdk.version>
+
+		<!-- Spring Security OAuth 2 -->
+		<spring-security-oauth2.version>2.3.7.RELEASE</spring-security-oauth2.version>
+
+		<!-- JWT -->
+		<spring-security-jwt.version>1.0.11.RELEASE</spring-security-jwt.version>
 	</properties>
 
 	<dependencies>
@@ -153,7 +159,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-freemarker</artifactId>
 		</dependency>
-		
+
 		<!-- LOGBACK loggly -->
 		<dependency>
 			<groupId>org.logback-extensions</groupId>
@@ -215,6 +221,21 @@
 				spring-boot-starter-oauth2-resource-server
 			</artifactId>
 		</dependency>
+
+		<!-- JWT -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-jwt</artifactId>
+			<version>${spring-security-jwt.version}</version>
+		</dependency>
+
+		<!-- Spring Security OAuth 2 -->
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>${spring-security-oauth2.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
