@@ -22,16 +22,23 @@ import com.fasterxml.classmate.TypeResolver;
 
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.OAuthBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.GrantType;
+import springfox.documentation.service.ResourceOwnerPasswordCredentialsGrant;
 import springfox.documentation.service.ResponseMessage;
+import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -43,15 +50,11 @@ public class SpringFoxConfig {
 	@Bean
 	public Docket apiDocketV1() {
 		var typeResolver = new TypeResolver();
-		
-		return new Docket(DocumentationType.SWAGGER_2)
-				.groupName("V1")
-				.select()
+
+		return new Docket(DocumentationType.SWAGGER_2).groupName("V1").select()
 //					.apis(RequestHandlerSelectors.any()) todos os endpoints da api
-					.apis(RequestHandlerSelectors.basePackage("com.algaworks.algafood.api"))
-					.paths(PathSelectors.ant("/v1/**"))
-				.build()
-				.useDefaultResponseMessages(false)
+				.apis(RequestHandlerSelectors.basePackage("com.algaworks.algafood.api"))
+				.paths(PathSelectors.ant("/v1/**")).build().useDefaultResponseMessages(false)
 				.globalResponseMessage(RequestMethod.GET, globalGetResponseMessage())
 				.globalResponseMessage(RequestMethod.POST, globalPostResponseMessage())
 				.globalResponseMessage(RequestMethod.PUT, globalPostResponseMessage())
@@ -64,119 +67,104 @@ public class SpringFoxConfig {
 //							.modelRef(new ModelRef("string"))
 //							.build()
 //						))
-				.ignoredParameterTypes(ServletWebRequest.class)
-				.additionalModels(typeResolver.resolve(Problem.class))
+				.ignoredParameterTypes(ServletWebRequest.class).additionalModels(typeResolver.resolve(Problem.class))
 				.directModelSubstitute(Pageable.class, PageableModelOpenApi.class)
+				.alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Page.class, CozinhaModel.class),
+						CozinhasModelOpenApi.class))
 				.alternateTypeRules(AlternateTypeRules.newRule(
-		                    typeResolver.resolve(Page.class, CozinhaModel.class),
-		                    CozinhasModelOpenApi.class))
-	            .alternateTypeRules(AlternateTypeRules.newRule(
-		                    typeResolver.resolve(Page.class, PedidoResumoModel.class),
-		                    PedidosResumoModelOpenApi.class))
-				.apiInfo(apiInfoV1())
-				.tags(
-						new Tag("Cidades", "Gerencia as cidades"),
+						typeResolver.resolve(Page.class, PedidoResumoModel.class), PedidosResumoModelOpenApi.class))
+
+				.securitySchemes(Arrays.asList(securitySchema()))
+				.securityContexts(Arrays.asList(securityCotext()))
+
+				.apiInfo(apiInfoV1()).tags(new Tag("Cidades", "Gerencia as cidades"),
 						new Tag("Grupos", "Gerencia os grupos de usuários"),
 						new Tag("Cozinhas", "Gerencia de cozinhas"),
 						new Tag("Formas de Pagamento", "Gerencia as formas de pagamento"),
-						new Tag("Pedidos", "Gerencia os pedidos")
-					);
+						new Tag("Pedidos", "Gerencia os pedidos"));
 	}
-	
+
 	@Bean
 	public Docket apiDocketV2() {
 		var typeResolver = new TypeResolver();
-		
-		return new Docket(DocumentationType.SWAGGER_2)
-				.groupName("V2")
-				.select()
+
+		return new Docket(DocumentationType.SWAGGER_2).groupName("V2").select()
 //					.apis(RequestHandlerSelectors.any()) todos os endpoints da api
-					.apis(RequestHandlerSelectors.basePackage("com.algaworks.algafood.api"))
-					.paths(PathSelectors.ant("/v2/**"))
-				.build()
-				.useDefaultResponseMessages(false)
+				.apis(RequestHandlerSelectors.basePackage("com.algaworks.algafood.api"))
+				.paths(PathSelectors.ant("/v2/**")).build().useDefaultResponseMessages(false)
 				.globalResponseMessage(RequestMethod.GET, globalGetResponseMessage())
 				.globalResponseMessage(RequestMethod.POST, globalPostResponseMessage())
 				.globalResponseMessage(RequestMethod.PUT, globalPostResponseMessage())
 				.globalResponseMessage(RequestMethod.DELETE, globalDeleteResponseMessage())
-				.ignoredParameterTypes(ServletWebRequest.class)
-				.additionalModels(typeResolver.resolve(Problem.class))
-				.directModelSubstitute(Pageable.class, PageableModelOpenApi.class)
-				.apiInfo(apiInfoV2())
-				.tags(
-						new Tag("Cidades", "Gerencia as cidades"),
-						new Tag("Cozinhas", "Gerencia de cozinhas")
-					);
+				.ignoredParameterTypes(ServletWebRequest.class).additionalModels(typeResolver.resolve(Problem.class))
+				.directModelSubstitute(Pageable.class, PageableModelOpenApi.class).apiInfo(apiInfoV2())
+				.tags(new Tag("Cidades", "Gerencia as cidades"), new Tag("Cozinhas", "Gerencia de cozinhas"));
 	}
-	
+
 	private List<ResponseMessage> globalDeleteResponseMessage() {
-		return Arrays.asList(
-				new ResponseMessageBuilder()
-					.code(HttpStatus.BAD_REQUEST.value())
-					.message("Requisição inválida (erro do cliente)")
-					.responseModel(new ModelRef("Problema"))
-					.build(),
-				new ResponseMessageBuilder()
-					.code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-					.message("Erro interno do servidor")
-					.responseModel(new ModelRef("Problema"))
-					.build()
-				);
+		return Arrays.asList(new ResponseMessageBuilder().code(HttpStatus.BAD_REQUEST.value())
+				.message("Requisição inválida (erro do cliente)").responseModel(new ModelRef("Problema")).build(),
+				new ResponseMessageBuilder().code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+						.message("Erro interno do servidor").responseModel(new ModelRef("Problema")).build());
 	}
-	
+
 	private List<ResponseMessage> globalPostResponseMessage() {
-		return Arrays.asList(
-				new ResponseMessageBuilder()
-					.code(HttpStatus.BAD_REQUEST.value())
-					.message("Requisição inválida (erro do cliente)")
-					.responseModel(new ModelRef("Problema"))
-					.build(),
-				new ResponseMessageBuilder()
-					.code(HttpStatus.NOT_ACCEPTABLE.value())
-					.message("Recurso não possui representação que poderia ser aceita pelo consumidor")
-					.build(),
-				new ResponseMessageBuilder()
-					.code(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
-					.message("Requisição recusada porque o corpo está em um formato não suportado")
-					.responseModel(new ModelRef("Problema"))
-					.build(),
-				new ResponseMessageBuilder()
-					.code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-					.message("Erro interno do servidor")
-					.responseModel(new ModelRef("Problema"))
-					.build()
-				);
+		return Arrays.asList(new ResponseMessageBuilder().code(HttpStatus.BAD_REQUEST.value())
+				.message("Requisição inválida (erro do cliente)").responseModel(new ModelRef("Problema")).build(),
+				new ResponseMessageBuilder().code(HttpStatus.NOT_ACCEPTABLE.value())
+						.message("Recurso não possui representação que poderia ser aceita pelo consumidor").build(),
+				new ResponseMessageBuilder().code(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
+						.message("Requisição recusada porque o corpo está em um formato não suportado")
+						.responseModel(new ModelRef("Problema")).build(),
+				new ResponseMessageBuilder().code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+						.message("Erro interno do servidor").responseModel(new ModelRef("Problema")).build());
 	}
-	
+
 	private List<ResponseMessage> globalGetResponseMessage() {
 		return Arrays.asList(
-				new ResponseMessageBuilder()
-					.code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-					.message("Erro interno do servidor")
-					.responseModel(new ModelRef("Problema"))
-					.build(),
-				new ResponseMessageBuilder()
-					.code(HttpStatus.NOT_ACCEPTABLE.value())
-					.message("Recurso não possui representação que poderia ser aceita pelo consumidor")
-					.build()
-				);
+				new ResponseMessageBuilder().code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+						.message("Erro interno do servidor").responseModel(new ModelRef("Problema")).build(),
+				new ResponseMessageBuilder().code(HttpStatus.NOT_ACCEPTABLE.value())
+						.message("Recurso não possui representação que poderia ser aceita pelo consumidor").build());
 	}
-	
+
 	private ApiInfo apiInfoV1() {
-		return new ApiInfoBuilder()
-					.title("AlgaFood API")
-					.description("API aberta para clientes e restaurantes")
-					.version("1.0.1")
-					.contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com"))
-					.build();
+		return new ApiInfoBuilder().title("AlgaFood API").description("API aberta para clientes e restaurantes")
+				.version("1.0.1")
+				.contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com")).build();
+	}
+
+	private ApiInfo apiInfoV2() {
+		return new ApiInfoBuilder().title("AlgaFood API").description("API aberta para clientes e restaurantes")
+				.version("2.0.1")
+				.contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com")).build();
+	}
+
+	private SecurityScheme securitySchema() {
+		return new OAuthBuilder()
+				.name("AlgaFood")
+				.grantTypes(grantTypes())
+				.scopes(scopes())
+				.build();
+	}
+
+	private List<GrantType> grantTypes() {
+		return Arrays.asList(new ResourceOwnerPasswordCredentialsGrant("/oauth/token"));
 	}
 	
-	private ApiInfo apiInfoV2() {
-		return new ApiInfoBuilder()
-					.title("AlgaFood API")
-					.description("API aberta para clientes e restaurantes")
-					.version("2.0.1")
-					.contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com"))
-					.build();
+	private List<AuthorizationScope> scopes() {
+		return Arrays.asList(new AuthorizationScope("READ", "Acesso de leitura"),
+				new AuthorizationScope("WRITE", "Acesso de escrita"));
+	}
+	
+	private SecurityContext securityCotext() {
+		var securityReference = SecurityReference.builder()
+				.reference("AlgaFood")
+				.scopes(scopes().toArray(new AuthorizationScope[0]))
+				.build();
+		
+		return SecurityContext.builder().securityReferences(Arrays.asList(securityReference))
+				.forPaths(PathSelectors.any())
+				.build();
 	}
 }
