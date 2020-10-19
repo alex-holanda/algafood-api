@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.v1.assembler.PermissaoModelAssembler;
 import com.algaworks.algafood.api.v1.model.PermissaoModel;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.service.CadastroPermissaoService;
 
 @RestController
@@ -22,6 +23,7 @@ public class PermissaoController {
 	@Autowired
 	private PermissaoModelAssembler permissaoModelAssembler;
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@GetMapping
 	public ResponseEntity<CollectionModel<PermissaoModel>> listar() {
 		return ResponseEntity.ok(permissaoModelAssembler.toCollectionModel(permissaoService.listar()));

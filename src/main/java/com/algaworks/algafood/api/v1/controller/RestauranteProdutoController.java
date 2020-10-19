@@ -24,6 +24,7 @@ import com.algaworks.algafood.api.v1.assembler.ProdutoModelAssembler;
 import com.algaworks.algafood.api.v1.disassembler.ProdutoInputDisassembler;
 import com.algaworks.algafood.api.v1.model.ProdutoModel;
 import com.algaworks.algafood.api.v1.model.input.ProdutoInput;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.domain.service.CadastroProdutoService;
 
@@ -43,6 +44,7 @@ public class RestauranteProdutoController {
 	@Autowired
 	private AlgaLinks algaLinks;
 	
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping
 	public ResponseEntity<CollectionModel<ProdutoModel>> listar(@PathVariable Long restauranteId, 
 				@RequestParam(required = false, defaultValue = "false") Boolean incluirInativos) {
@@ -56,6 +58,7 @@ public class RestauranteProdutoController {
 		return ResponseEntity.ok(produtosModel);
 	}
 	
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping("/{produtoId}")
 	public ResponseEntity<ProdutoModel> buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		Produto produto = produtoService.buscar(restauranteId, produtoId);
@@ -63,6 +66,7 @@ public class RestauranteProdutoController {
 		return ResponseEntity.ok(produtoModelAssembler.toModel(produto));
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@PostMapping
 	public ResponseEntity<ProdutoModel> adicionar(@PathVariable Long restauranteId, @RequestBody @Valid ProdutoInput produtoInput) {
 		Produto produto = produtoService.salvar(restauranteId, produtoInputDisassembler.toDomainObject(produtoInput));
@@ -72,6 +76,7 @@ public class RestauranteProdutoController {
 		return ResponseEntity.created(uri).body(produtoModelAssembler.toModel(produto));
 	}
 	
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@PutMapping("/{produtoId}")
 	public ResponseEntity<ProdutoModel> atualizar(@PathVariable Long restauranteId, @PathVariable Long produtoId, 
 				@RequestBody @Valid ProdutoInput produtoInput) {

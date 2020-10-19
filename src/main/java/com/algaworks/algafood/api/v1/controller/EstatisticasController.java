@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.v1.algalinks.AlgaLinks;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.dto.VendaDiaria;
 import com.algaworks.algafood.domain.fielter.VendaDiariaFilter;
 import com.algaworks.algafood.domain.service.VendaQueryService;
@@ -31,6 +32,7 @@ public class EstatisticasController {
 	@Autowired
 	private AlgaLinks algaLinks;
 	
+	@CheckSecurity.Estatisticas.PodeConsultar
 	@GetMapping
 	public ResponseEntity<EstatisticasModel> estatisticas() {
 		
@@ -41,6 +43,7 @@ public class EstatisticasController {
 		return ResponseEntity.ok(estaticasModel);
 	}
 	
+	@CheckSecurity.Estatisticas.PodeConsultar
 	@GetMapping("/vendas-diarias")
 	public ResponseEntity<List<VendaDiaria>> consultarVendasDiarias(VendaDiariaFilter filtro, 
 				@RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {
@@ -48,6 +51,7 @@ public class EstatisticasController {
 		return ResponseEntity.ok(vendaQueryService.consultarVendasDiarias(filtro, timeOffset));
 	}
 	
+	@CheckSecurity.Estatisticas.PodeConsultar
 	@GetMapping(path = "/vendas-diarias", produces = { MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<byte[]> consultarVendasDiariasPDF(VendaDiariaFilter filtro, 
 				@RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {

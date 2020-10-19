@@ -26,6 +26,7 @@ import com.algaworks.algafood.api.v1.disassembler.CozinhaInputDisassembler;
 import com.algaworks.algafood.api.v1.model.CozinhaModel;
 import com.algaworks.algafood.api.v1.model.input.CozinhaInput;
 import com.algaworks.algafood.api.v1.openapi.controller.CozinhaControllerOpenApi;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
 import com.algaworks.algafood.domain.service.CadastroCozinhaService;
@@ -53,6 +54,7 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	private PagedResourcesAssembler<Cozinha> pagedResourceAssembler;
 	
 	@GetMapping
+	@CheckSecurity.Cozinhas.PodeConsultar
 	public ResponseEntity<PagedModel<CozinhaModel>> listar(Pageable pageable) {
 		log.info("Consultando cozinhas com páginas de {} registros...", pageable.getPageSize());
 		
@@ -64,11 +66,13 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	}
 	
 	@GetMapping("/{id}")
+	@CheckSecurity.Cozinhas.PodeConsultar
 	public ResponseEntity<CozinhaModel> buscar(@PathVariable Long id) {
 		return ResponseEntity.ok(cozinhaModelAssembler.toModel(cadastroCozinha.buscarOuFalahar(id))); 
 	}
 	
 	@PostMapping
+	@CheckSecurity.Cozinhas.PodeEditar
 	public ResponseEntity<CozinhaModel> adicionar(@RequestBody @Valid CozinhaInput cozinhaInput) {
 		
 		Cozinha cozinha = cadastroCozinha.salvar(disassembler.toDomainObject(cozinhaInput));
@@ -79,6 +83,7 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	}
 	
 	@PutMapping("/{id}")
+	@CheckSecurity.Cozinhas.PodeEditar
 	public ResponseEntity<CozinhaModel> atualizar(@PathVariable Long id, @RequestBody @Valid CozinhaInput cozinhaInput) {
 		
 		Cozinha cozinhaAtual = cadastroCozinha.buscarOuFalahar(id);
@@ -89,6 +94,7 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	}
 	
 	@DeleteMapping("/{id}")
+	@CheckSecurity.Cozinhas.PodeEditar
 	public ResponseEntity<Void> remover(@PathVariable Long id) { 
 		
 		cadastroCozinha.excluir(id);

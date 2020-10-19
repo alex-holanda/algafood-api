@@ -35,6 +35,9 @@
 		
 		<!-- Logback - Loggly -->
 		<loggly.verion>0.1.5</loggly.verion>
+		
+		<!-- OAuth2 OIDC SDK -->
+		<oauth2-oidc-sdk.version>6.21.2</oauth2-oidc-sdk.version>
 	</properties>
 
 	<dependencies>
@@ -158,6 +161,13 @@
 			<version>${loggly.verion}</version>
 		</dependency>
 
+		<!-- OAuth2 OIDC SDK -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>oauth2-oidc-sdk</artifactId>
+			<version>${oauth2-oidc-sdk.version}</version>
+		</dependency>
+
 		<!-- SpringFox -->
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -198,6 +208,12 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>
+				spring-boot-starter-oauth2-resource-server
+			</artifactId>
 		</dependency>
 	</dependencies>
 

@@ -60,7 +60,7 @@ public class CadastroPedidoService {
 	}
 	
 	private void validarPedido(Pedido pedido) {
-		Usuario cliente = usuarioService.buscar(1L);
+		Usuario cliente = usuarioService.buscar(pedido.getCliente().getId());
 		
 		Cidade cidade = cidadeService.buscarOuFalhar(pedido.getEnderecoEntrega().getCidade().getId());
 		Restaurante restaurante = restauranteService.buscarOuFalhar(pedido.getRestaurante().getId());

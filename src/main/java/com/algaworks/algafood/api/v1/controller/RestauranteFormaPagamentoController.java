@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.algaworks.algafood.api.v1.algalinks.AlgaLinks;
 import com.algaworks.algafood.api.v1.assembler.FormaPagamentoModelAssembler;
 import com.algaworks.algafood.api.v1.model.FormaPagamentoModel;
+import com.algaworks.algafood.core.security.AlgaSecurity;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.service.CadastroRestauranteService;
 
@@ -30,25 +32,34 @@ public class RestauranteFormaPagamentoController {
 	@Autowired
 	private AlgaLinks algaLinks;
 
+	@Autowired
+	private AlgaSecurity algaSecurity;
+
+	@CheckSecurity.Restaurantes.PodeConsultar
 	@GetMapping
 	public ResponseEntity<CollectionModel<FormaPagamentoModel>> listar(@PathVariable Long restauranteId) {
 
 		Restaurante restaurante = cadastroRestaurante.buscarOuFalhar(restauranteId);
 
 		var formasPagamentoModel = formaPagamentoAssembler.toCollectionModel(restaurante.getFormasPagamento());
-		formasPagamentoModel.removeLinks()
-			.add(algaLinks.linkToRestauranteFormasPagamento(restaurante.getId()))
-			.add(algaLinks.linkToRestauranteFormaPagamentoAssociar(restaurante.getId(), "associar"));
+		formasPagamentoModel.removeLinks();
 
-		formasPagamentoModel.getContent().forEach(formaPagamentoModel -> {
-			formaPagamentoModel.add(algaLinks.linkToRestauranteFormaPagamentoDesassociar(restaurante.getId(),
-					formaPagamentoModel.getId(), "desassociar"));
-			
-		});
+		formasPagamentoModel.add(algaLinks.linkToRestauranteFormasPagamento(restaurante.getId()));
+
+		if (algaSecurity.podeGerenciarFuncionamentoRestaurantes(restauranteId)) {
+			formasPagamentoModel
+					.add(algaLinks.linkToRestauranteFormaPagamentoAssociar(restaurante.getId(), "associar"));
+
+			formasPagamentoModel.getContent().forEach(formaPagamentoModel -> {
+				formaPagamentoModel.add(algaLinks.linkToRestauranteFormaPagamentoDesassociar(restaurante.getId(),
+						formaPagamentoModel.getId(), "desassociar"));
+			});
+		}
 
 		return ResponseEntity.ok(formasPagamentoModel);
 	}
 
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@DeleteMapping("/{formaPagamentoId}")
 	public ResponseEntity<Void> desassociar(@PathVariable Long restauranteId, @PathVariable Long formaPagamentoId) {
 
@@ -57,6 +68,7 @@ public class RestauranteFormaPagamentoController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@CheckSecurity.Restaurantes.PodeGerenciarFuncionamento
 	@PutMapping("/{formaPagamentoId}")
 	public ResponseEntity<Void> associar(@PathVariable Long restauranteId, @PathVariable Long formaPagamentoId) {
 

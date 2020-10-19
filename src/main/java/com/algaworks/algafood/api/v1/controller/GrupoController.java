@@ -23,6 +23,7 @@ import com.algaworks.algafood.api.v1.disassembler.GrupoInputDisassembler;
 import com.algaworks.algafood.api.v1.model.GrupoModel;
 import com.algaworks.algafood.api.v1.model.input.GrupoInput;
 import com.algaworks.algafood.api.v1.openapi.controller.GrupoControllerOpenApi;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.service.CadastroGrupoService;
 
@@ -39,6 +40,7 @@ public class GrupoController implements GrupoControllerOpenApi {
 	@Autowired
 	private GrupoInputDisassembler grupoDisasemmbler;
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@GetMapping
 	public ResponseEntity<CollectionModel<GrupoModel>> listar() {
 		var grupoCollectionModel = grupoAssembler.toCollectionModel(grupoService.listar());
@@ -46,11 +48,13 @@ public class GrupoController implements GrupoControllerOpenApi {
 		return ResponseEntity.ok(grupoCollectionModel);
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@GetMapping("/{id}")
 	public ResponseEntity<GrupoModel> buscar(@PathVariable Long id) {
 		return ResponseEntity.ok(grupoAssembler.toModel(grupoService.buscar(id)));
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@PostMapping
 	public ResponseEntity<GrupoModel> adicionar(@RequestBody @Valid GrupoInput grupoInput) {
 		
@@ -61,6 +65,7 @@ public class GrupoController implements GrupoControllerOpenApi {
 		return ResponseEntity.created(uri).body(grupoAssembler.toModel(grupo));
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@PutMapping("/{id}")
 	public ResponseEntity<GrupoModel> atualizar(@RequestBody @Valid GrupoInput grupoInput, @PathVariable Long id) {
 		Grupo grupoAtual = grupoService.buscar(id);
@@ -70,6 +75,7 @@ public class GrupoController implements GrupoControllerOpenApi {
 		return ResponseEntity.ok(grupoAssembler.toModel(grupoService.atualizar(grupoAtual)));
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeEditar
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> remover(@PathVariable Long id) {
 		grupoService.excluir(id);

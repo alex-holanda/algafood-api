@@ -23,6 +23,7 @@ import com.algaworks.algafood.api.v1.model.UsuarioModel;
 import com.algaworks.algafood.api.v1.model.input.SenhaInput;
 import com.algaworks.algafood.api.v1.model.input.UsuarioAlteracaoInput;
 import com.algaworks.algafood.api.v1.model.input.UsuarioInput;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.service.CadastroUsuarioService;
 
@@ -39,11 +40,13 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioInputDisassembler usuarioDisassembler;
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@GetMapping
 	public ResponseEntity<CollectionModel<UsuarioModel>> listar() {
 		return ResponseEntity.ok(usuarioAssembler.toCollectionModel(usuarioService.listar()));
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeConsultar
 	@GetMapping("/{id}")
 	public ResponseEntity<UsuarioModel> buscar(@PathVariable Long id) {
 		return ResponseEntity.ok(usuarioAssembler.toModel(usuarioService.buscar(id)));
@@ -58,6 +61,7 @@ public class UsuarioController {
 		return ResponseEntity.created(uri).body(usuarioAssembler.toModel(usuario));
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeAlterarUsuario
 	@PutMapping("/{id}")
 	public ResponseEntity<UsuarioModel> atualizar(@RequestBody @Valid UsuarioAlteracaoInput usuarioAlteracaoInput, @PathVariable Long id) {
 		Usuario usuario = usuarioService.buscar(id);
@@ -67,10 +71,11 @@ public class UsuarioController {
 		return ResponseEntity.ok(usuarioAssembler.toModel(usuarioService.atualizar(usuario)));
 	}
 	
+	@CheckSecurity.UsuariosGruposPermissoes.PodeAlterarPropriaSenha
 	@PutMapping("/{id}/senha")
 	public ResponseEntity<Void> atualizarSenha(@RequestBody @Valid SenhaInput senhaInput, @PathVariable Long id) {
 		
-		usuarioService.atualizarSenha(id, senhaInput.getSenhaAtual(), senhaInput.getNovaSenha());
+		usuarioService.alterarSenha(id, senhaInput.getSenhaAtual(), senhaInput.getNovaSenha());
 				
 		return ResponseEntity.noContent().build();
 	}

@@ -29,6 +29,7 @@ import com.algaworks.algafood.api.v1.disassembler.FormaPagamentoInputDisassemble
 import com.algaworks.algafood.api.v1.model.FormaPagamentoModel;
 import com.algaworks.algafood.api.v1.model.input.FormaPagamentoInput;
 import com.algaworks.algafood.api.v1.openapi.controller.FormaPagamentoControllerOpenApi;
+import com.algaworks.algafood.core.security.CheckSecurity;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.FormaPagamento;
@@ -47,6 +48,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 	@Autowired
 	private FormaPagamentoInputDisassembler disassembler;
 	
+	@CheckSecurity.FormasPagamento.PodeConsultar
 	@GetMapping
 	public ResponseEntity<CollectionModel<FormaPagamentoModel>> listar(ServletWebRequest request) {
 		ShallowEtagHeaderFilter.disableContentCaching(request.getRequest());
@@ -67,6 +69,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 				.body(assembler.toCollectionModel(cadastroFormaPagamento.listar()));
 	}
 	
+	@CheckSecurity.FormasPagamento.PodeConsultar
 	@GetMapping("/{formaPagamentoId}")
 	public ResponseEntity<FormaPagamentoModel> buscar(@PathVariable Long formaPagamentoId, ServletWebRequest request) {
 		ShallowEtagHeaderFilter.disableContentCaching(request.getRequest());
@@ -87,6 +90,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 				.body(assembler.toModel(cadastroFormaPagamento.buscar(formaPagamentoId)));
 	}
 	
+	@CheckSecurity.FormasPagamento.PodeEditar
 	@PostMapping
 	public ResponseEntity<FormaPagamentoModel> adicionar(@RequestBody @Valid FormaPagamentoInput formaPagamentoInput) {
 		
@@ -106,6 +110,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 		}
 	}
 	
+	@CheckSecurity.FormasPagamento.PodeEditar
 	@PutMapping("/{formaPagamentoId}")
 	public ResponseEntity<FormaPagamentoModel> ataulizar(@PathVariable Long formaPagamentoId, 
 				@RequestBody @Valid FormaPagamentoInput formaPagamentoInput) {
@@ -121,6 +126,7 @@ public class FormaPagamentoController implements FormaPagamentoControllerOpenApi
 		}
 	}
 	
+	@CheckSecurity.FormasPagamento.PodeEditar
 	@DeleteMapping("/{formaPagamentoId}")
 	public ResponseEntity<Void> remover(@PathVariable Long formaPagamentoId) {
 		

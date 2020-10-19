@@ -28,8 +28,13 @@ import com.algaworks.algafood.api.v1.model.input.PedidoInput;
 import com.algaworks.algafood.api.v1.openapi.controller.PedidoControllerOpenApi;
 import com.algaworks.algafood.core.data.PageWrapper;
 import com.algaworks.algafood.core.data.PageableTranslator;
+import com.algaworks.algafood.core.security.AlgaSecurity;
+import com.algaworks.algafood.core.security.CheckSecurity;
+import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
+import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.fielter.PedidoFilter;
 import com.algaworks.algafood.domain.model.Pedido;
+import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.service.CadastroPedidoService;
 import com.google.common.collect.ImmutableMap;
 
@@ -52,6 +57,10 @@ public class PedidoController implements PedidoControllerOpenApi {
 	@Autowired
 	private PagedResourcesAssembler<Pedido> pagedResourceAssembler;
 	
+	@Autowired
+	private AlgaSecurity algaSecurity;
+	
+	@CheckSecurity.Pedidos.PodePesquisar
 	@GetMapping
 	public ResponseEntity<PagedModel<PedidoResumoModel>> pesquisar(PedidoFilter filtro, Pageable pageable) {
 		var pageableTraduzido = traduzirPageable(pageable);
@@ -65,19 +74,32 @@ public class PedidoController implements PedidoControllerOpenApi {
 		return ResponseEntity.ok(pedidosPagedModel);
 	}
 	
+	@CheckSecurity.Pedidos.PodeBuscar
 	@GetMapping("/{codigoPedido}")
 	public ResponseEntity<PedidoModel> buscar(@PathVariable String codigoPedido) {
-		return ResponseEntity.ok(pedidoModelAssembler.toModel(pedidoService.buscar(codigoPedido)));
+		Pedido pedido = pedidoService.buscar(codigoPedido);
+		PedidoModel pedidoModel = pedidoModelAssembler.toModel(pedido);
+		
+		return ResponseEntity.ok(pedidoModel);
 	}
 	
+	@CheckSecurity.Pedidos.PodeCriar
 	@PostMapping
 	public ResponseEntity<PedidoModel> adicionar(@RequestBody @Valid PedidoInput pedidoInput) {
-		
-		Pedido pedido = pedidoService.emitir(pedidoInputDisassembler.toDomainObject(pedidoInput));
-		
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{codigo}").buildAndExpand(pedido.getCodigo()).toUri();
-		
-		return ResponseEntity.created(uri).body(pedidoModelAssembler.toModel(pedido));
+		try {
+			
+			Pedido pedido = pedidoInputDisassembler.toDomainObject(pedidoInput);
+			pedido.setCliente(new Usuario());
+			pedido.getCliente().setId(algaSecurity.getUsuarioId());
+			
+			pedido = pedidoService.emitir(pedido);
+			
+			URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{codigo}").buildAndExpand(pedido.getCodigo()).toUri();
+			
+			return ResponseEntity.created(uri).body(pedidoModelAssembler.toModel(pedido));
+		} catch (EntidadeNaoEncontradaException e) {
+			throw new NegocioException(e.getMessage(), e);
+		}
 	}
 	
 	private Pageable traduzirPageable(Pageable apiPageable) {
