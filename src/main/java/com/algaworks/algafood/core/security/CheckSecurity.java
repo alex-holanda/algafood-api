@@ -29,7 +29,7 @@ public @interface CheckSecurity {
 
 	public @interface Restaurantes {
 
-		@PreAuthorize("@algasScurity.podeConsultarRestaurantes()")
+		@PreAuthorize("@algaSecurity.podeConsultarRestaurantes()")
 		@Retention(RUNTIME)
 		@Target(METHOD)
 		public @interface PodeConsultar { }
@@ -124,7 +124,7 @@ public @interface CheckSecurity {
 		@Target(METHOD)
 		public @interface PodeAlterarUsuario { }
 		
-		@PreAuthorize("@algaSecurity.podeEditarUsuariosGruposPermissoes()")
+		@PreAuthorize("@algaSecurity.podeEditarUsusariosGruposPermissoes()")
 		@Retention(RUNTIME)
 		@Target(METHOD)
 		public @interface PodeEditar { }
