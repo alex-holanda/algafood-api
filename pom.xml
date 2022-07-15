@@ -28,7 +28,7 @@
 		<jasperreports.version>6.10.0</jasperreports.version>
 
 		<!-- S3 Amazon -->
-		<aws-java-sdk-s3.version>1.11.671</aws-java-sdk-s3.version>
+		<aws-java-sdk-s3.version>1.12.261</aws-java-sdk-s3.version>
 
 		<!-- SpringFox -->
 		<springfox.version>2.9.2</springfox.version>
