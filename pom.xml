@@ -31,7 +31,7 @@
 		<aws-java-sdk-s3.version>1.11.671</aws-java-sdk-s3.version>
 
 		<!-- SpringFox -->
-		<springfox.version>2.9.2</springfox.version>
+		<springfox.version>2.10.0</springfox.version>
 
 		<!-- Logback - Loggly -->
 		<loggly.verion>0.1.5</loggly.verion>
